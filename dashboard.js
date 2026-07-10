@@ -441,6 +441,7 @@ function makeLineChart(canvasId, days) {
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
       plugins: { legend: { display:false }, tooltip: tooltipStyle(t) },
       scales: scaleStyle(t),
     },
@@ -472,6 +473,7 @@ function makeDonutChart(canvasId) {
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
       cutout: '65%',
       plugins: {
         legend: {
@@ -513,6 +515,7 @@ function makeCompletionChart(canvasId) {
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: { labels: { color: t.text, font: { family:"'Geist Mono'", size:10 }, boxWidth:10, boxHeight:10, usePointStyle:true } },
         tooltip: tooltipStyle(t),
@@ -547,6 +550,7 @@ function makeHourlyChart(canvasId) {
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
       plugins: { legend: { display:false }, tooltip: tooltipStyle(t) },
       scales: scaleStyle(t),
     },
