@@ -522,6 +522,57 @@
       background: var(--cyan);
       opacity: 0.08;
     }
+
+    /* ===================== CHAT TEXT INPUT ===================== */
+    .chat-input-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      background: rgba(17, 24, 39, 0.4);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 10;
+      width: 100%;
+    }
+    .chat-input {
+      flex: 1;
+      height: 44px;
+      padding: 0 16px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s, background-color 0.2s;
+    }
+    .chat-input:focus {
+      border-color: var(--green);
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .chat-send-btn {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+    .chat-send-btn:active {
+      transform: scale(0.92);
+      background: #0d9488;
+    }
+    .chat-send-btn svg {
+      width: 18px; height: 18px;
+      margin-left: 2px;
+    }
   </style>
 </head>
 <body>
@@ -612,6 +663,17 @@
       </div>
     </div>
 
+    <!-- Chat Input Section -->
+    <div class="chat-input-container" id="chatInputContainer">
+      <input type="text" class="chat-input" id="chatTextInput" placeholder="Type a message..." autocomplete="off"/>
+      <button class="chat-send-btn" id="chatSendBtn" title="Send message">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"/>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      </button>
+    </div>
+
     <!-- Control bar -->
     <div class="control-bar">
       <button class="btn-control mute-btn" id="muteBtn" title="Mute">
@@ -673,6 +735,8 @@
       const muteBtn = $('muteBtn');
       const endBtn = $('endBtn');
       const voiceViz = $('voiceViz');
+      const chatTextInput = $('chatTextInput');
+      const chatSendBtn = $('chatSendBtn');
 
       // ── State ──
       let ws = null;
@@ -1119,6 +1183,34 @@
       document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible' && ws && ws.readyState === WebSocket.OPEN) {
           acquireWakeLock();
+        }
+      });
+
+      // Send typed message
+      function sendTextMessage() {
+        const text = chatTextInput.value.trim();
+        if (!text) return;
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          // Stop current speaking to clear audio buffer/playback if any
+          stopCurrentAudio();
+          
+          // Send to server
+          ws.send(JSON.stringify({ type: 'user_message', text: text }));
+          
+          // Clear input field
+          chatTextInput.value = '';
+        }
+      }
+
+      chatSendBtn.addEventListener('click', () => {
+        haptic();
+        sendTextMessage();
+      });
+
+      chatTextInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          haptic();
+          sendTextMessage();
         }
       });
 
