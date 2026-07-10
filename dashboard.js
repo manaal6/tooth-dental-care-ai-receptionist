@@ -224,12 +224,12 @@ function renderRecentTable() {
   recent.forEach(l => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td class="td-name">${esc(l.name)}</td>
-      <td class="td-phone">${esc(l.phone)}</td>
-      <td class="td-service">${esc(l.service)}</td>
-      <td class="td-dur">${l.duration ? fmtDur(parseDur(l.duration)) : '—'}</td>
-      <td>${chipHtml(l.completed)}</td>
-      <td class="td-ts">${l.timestamp ? fmtDT(l.timestamp) : '—'}</td>
+      <td class="td-name" data-label="Name">${esc(l.name)}</td>
+      <td class="td-phone" data-label="Phone">${esc(l.phone)}</td>
+      <td class="td-service" data-label="Service">${esc(l.service)}</td>
+      <td class="td-dur" data-label="Duration">${l.duration ? fmtDur(parseDur(l.duration)) : '—'}</td>
+      <td data-label="Status">${chipHtml(l.completed)}</td>
+      <td class="td-ts" data-label="Time">${l.timestamp ? fmtDT(l.timestamp) : '—'}</td>
     `;
     tr.addEventListener('click', () => openModal(l));
     tbody.appendChild(tr);
@@ -288,13 +288,13 @@ function renderFullTable() {
   FILTERED.forEach((l, i) => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td class="td-num">${i + 1}</td>
-      <td class="td-name">${esc(l.name)}</td>
-      <td class="td-phone">${esc(l.phone)}</td>
-      <td class="td-service">${esc(l.service)}</td>
-      <td class="td-dur">${l.duration ? fmtDur(parseDur(l.duration)) : '—'}</td>
-      <td>${chipHtml(l.completed)}</td>
-      <td class="td-ts">${l.timestamp ? fmtDT(l.timestamp) : '—'}</td>
+      <td class="td-num" data-label="#">${i + 1}</td>
+      <td class="td-name" data-label="Name">${esc(l.name)}</td>
+      <td class="td-phone" data-label="Phone">${esc(l.phone)}</td>
+      <td class="td-service" data-label="Service">${esc(l.service)}</td>
+      <td class="td-dur" data-label="Duration">${l.duration ? fmtDur(parseDur(l.duration)) : '—'}</td>
+      <td data-label="Status">${chipHtml(l.completed)}</td>
+      <td class="td-ts" data-label="Timestamp">${l.timestamp ? fmtDT(l.timestamp) : '—'}</td>
       <td><button class="view-btn">View</button></td>
     `;
     tr.querySelector('.view-btn').addEventListener('click', e => { e.stopPropagation(); openModal(l); });
@@ -641,7 +641,44 @@ function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTi
 function $$(id, ev, fn) { const e=$(id); if(e) e.addEventListener(ev, fn); }
 
 /* ═══════════════════════════════════════════════════════════
+   ADMIN GATE SECURITY
+   ═══════════════════════════════════════════════════════════ */
+function initAdminGate() {
+  const gate = $('adminGate');
+  const pinInput = $('adminPin');
+  const gateBtn = $('gateBtn');
+  const gateError = $('gateError');
+  
+  if (!gate) return;
+  
+  // Quick check if already unlocked in this session
+  if (sessionStorage.getItem('admin_auth') === 'true') {
+    gate.style.display = 'none';
+    return;
+  }
+  
+  function tryUnlock() {
+    if (pinInput.value === '1234') {
+      sessionStorage.setItem('admin_auth', 'true');
+      gate.style.transition = 'opacity 0.3s ease';
+      gate.style.opacity = '0';
+      setTimeout(() => { gate.style.display = 'none'; }, 300);
+    } else {
+      gateError.style.display = 'block';
+      pinInput.value = '';
+      pinInput.focus();
+    }
+  }
+  
+  gateBtn.addEventListener('click', tryUnlock);
+  pinInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') tryUnlock();
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
    BOOT
    ═══════════════════════════════════════════════════════════ */
+initAdminGate();
 loadData();
 pollTimer = setInterval(loadData, POLL_MS);

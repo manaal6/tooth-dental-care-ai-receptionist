@@ -1215,6 +1215,17 @@
       });
 
       // ── Init ──
+      const params = new URLSearchParams(window.location.search);
+      const isUserOnly = params.get('role') === 'user';
+      if (isUserOnly) {
+        $('backBtn').style.display = 'none';
+        const endBackBtn = document.querySelector('#endedOverlay .overlay-btn.primary');
+        if (endBackBtn) {
+          endBackBtn.textContent = 'Restart Call';
+          endBackBtn.setAttribute('onclick', 'location.reload()');
+        }
+      }
+
       connectWS();
 
     })();

@@ -11,6 +11,25 @@
 </head>
 <body>
 
+<!-- ░░ ADMIN GATE LOCK ░░ -->
+<div class="admin-gate" id="adminGate">
+  <div class="admin-gate-card">
+    <div class="gate-logo">
+      <svg viewBox="0 0 28 28" fill="none" style="width: 48px; height: 48px; color: var(--accent); margin: 0 auto 16px;"><path d="M14 2L26 8V20L14 26L2 20V8L14 2Z" stroke="currentColor" stroke-width="1.5"/><path d="M14 8L20 11V17L14 20L8 17V11L14 8Z" fill="currentColor" opacity=".3"/></svg>
+    </div>
+    <h2>Admin console</h2>
+    <p>Enter PIN to access leads & analytics dashboard.</p>
+    <div style="margin: 20px 0;">
+      <input type="password" id="adminPin" class="filt-input" style="text-align: center; font-size: 20px; letter-spacing: 6px; width: 100%; max-width: 180px; height: 48px;" placeholder="••••" maxlength="4" autofocus/>
+    </div>
+    <button class="action-btn" id="gateBtn" style="margin: 0 auto; display: block; padding: 12px 28px; font-size: 14px; height: auto;">Unlock Dashboard</button>
+    <div id="gateError" style="color: #f43f5e; font-size: 12px; margin-top: 12px; display: none;">Incorrect PIN. Please try again.</div>
+    <div style="margin-top: 24px; border-top: 1px solid var(--border); padding-top: 20px;">
+      <a href="call.html?role=user" style="color: var(--accent); font-size: 13px; font-weight: 500; text-decoration: underline;">Open Patient Voice Call (No PIN required)</a>
+    </div>
+  </div>
+</div>
+
 <!-- ░░ SIDEBAR ░░ -->
 <aside class="sidebar" id="sidebar">
   <div class="sb-logo">
