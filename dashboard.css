@@ -80,6 +80,9 @@ svg{display:block;flex-shrink:0}
 
 /* ── Base ───────────────────────────────────────────────── */
 html { font-size: 15px; scroll-behavior: smooth; }
+@media (max-width: 768px) {
+  html { font-size: 13px; }
+}
 body {
   font-family: var(--font-ui);
   background: var(--bg-base);
