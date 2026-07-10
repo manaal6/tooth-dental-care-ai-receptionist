@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#0a0f1a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Tooth Dental Care">
+  <title>Call Emily — Tooth Dental Care</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ===================== RESET & BASE ===================== */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      height: 100%; width: 100%;
+      overflow: hidden;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0f1a;
+      color: #f0f2f7;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Safe area insets for notch devices */
+    :root {
+      --sat: env(safe-area-inset-top, 0px);
+      --sar: env(safe-area-inset-right, 0px);
+      --sab: env(safe-area-inset-bottom, 0px);
+      --sal: env(safe-area-inset-left, 0px);
+      --green: #10b981;
+      --green-dim: rgba(16, 185, 129, 0.15);
+      --green-glow: rgba(16, 185, 129, 0.35);
+      --cyan: #06b6d4;
+      --cyan-dim: rgba(6, 182, 212, 0.15);
+      --bg: #0a0f1a;
+      --surface: #111827;
+      --surface-light: #1e293b;
+      --text: #f0f2f7;
+      --text-dim: #94a3b8;
+      --red: #ef4444;
+      --red-dim: rgba(239, 68, 68, 0.15);
+    }
+
+    /* ===================== LAYOUT ===================== */
+    .call-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      height: 100dvh;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+      padding-top: var(--sat);
+      padding-left: var(--sal);
+      padding-right: var(--sar);
+    }
+
+    /* ===================== HEADER ===================== */
+    .call-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--green);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 8px 4px;
+      min-width: 44px;
+      min-height: 44px;
+      transition: opacity 0.2s;
+    }
+    .back-btn:active { opacity: 0.6; }
+    .back-btn svg { width: 20px; height: 20px; }
+    .connection-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-dim);
+      padding: 6px 12px;
+      border-radius: 20px;
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .connection-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--text-dim);
+      transition: background 0.3s;
+    }
+    .connection-dot.connected { background: var(--green); box-shadow: 0 0 8px var(--green-glow); }
+    .connection-dot.error { background: var(--red); box-shadow: 0 0 8px rgba(239,68,68,0.4); }
+
+    /* ===================== AVATAR SECTION ===================== */
+    .avatar-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 20px 16px;
+      flex-shrink: 0;
+      position: relative;
+    }
+    .avatar-wrapper {
+      position: relative;
+      width: 140px; height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Pulse rings */
+    .pulse-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid var(--green);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s;
+    }
+    .pulse-ring-1 { width: 160px; height: 160px; }
+    .pulse-ring-2 { width: 190px; height: 190px; }
+    .pulse-ring-3 { width: 220px; height: 220px; }
+
+    .avatar-wrapper.speaking .pulse-ring {
+      opacity: 1;
+      animation: pulseRing 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+    .avatar-wrapper.speaking .pulse-ring-2 { animation-delay: 0.4s; }
+    .avatar-wrapper.speaking .pulse-ring-3 { animation-delay: 0.8s; }
+
+    @keyframes pulseRing {
+      0% { transform: scale(0.85); opacity: 0.6; }
+      50% { opacity: 0.2; }
+      100% { transform: scale(1.15); opacity: 0; }
+    }
+
+    /* Voice visualizer bars */
+    .voice-visualizer {
+      position: absolute;
+      width: 180px; height: 180px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .viz-bar {
+      position: absolute;
+      width: 3px;
+      background: var(--green);
+      border-radius: 2px;
+      opacity: 0;
+      transform-origin: bottom center;
+      transition: opacity 0.3s;
+    }
+    .avatar-wrapper.speaking .viz-bar {
+      opacity: 0.6;
+      animation: vizPulse 1.2s ease-in-out infinite alternate;
+    }
+
+    @keyframes vizPulse {
+      0% { height: 8px; opacity: 0.3; }
+      50% { height: 22px; opacity: 0.7; }
+      100% { height: 12px; opacity: 0.4; }
+    }
+
+    .avatar-circle {
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--green), var(--cyan));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 0 40px var(--green-dim), 0 8px 32px rgba(0,0,0,0.4);
+      transition: box-shadow 0.4s;
+    }
+    .avatar-wrapper.speaking .avatar-circle {
+      box-shadow: 0 0 60px var(--green-glow), 0 0 120px var(--green-dim), 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .avatar-circle svg {
+      width: 56px; height: 56px;
+      color: white;
+    }
+
+    .caller-info {
+      margin-top: 16px;
+      text-align: center;
+    }
+    .caller-name {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+    .caller-role {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+    .call-timer {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--green);
+      margin-top: 8px;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.5px;
+    }
+
+    /* ===================== TRANSCRIPT ===================== */
+    .transcript-section {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 0 16px;
+      position: relative;
+    }
+    .transcript-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--text-dim);
+      padding: 0 4px 8px;
+      flex-shrink: 0;
+    }
+    .transcript-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 4px 0 16px;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      mask-image: linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%);
+    }
+    .transcript-scroll::-webkit-scrollbar { width: 3px; }
+    .transcript-scroll::-webkit-scrollbar-track { background: transparent; }
+    .transcript-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+    .msg {
+      padding: 10px 14px;
+      border-radius: 16px;
+      margin-bottom: 8px;
+      max-width: 88%;
+      font-size: 14px;
+      line-height: 1.5;
+      animation: msgIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      word-wrap: break-word;
+    }
+    .msg-user {
+      background: var(--green-dim);
+      border: 1px solid rgba(16, 185, 129, 0.15);
+      margin-left: auto;
+      border-bottom-right-radius: 4px;
+      color: var(--text);
+    }
+    .msg-ai {
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.05);
+      margin-right: auto;
+      border-bottom-left-radius: 4px;
+      color: var(--text);
+    }
+    .msg-system {
+      background: transparent;
+      text-align: center;
+      max-width: 100%;
+      font-size: 12px;
+      color: var(--text-dim);
+      padding: 6px 0;
+    }
+    .msg-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 3px;
+      display: block;
+    }
+    .msg-user .msg-label { color: var(--green); }
+    .msg-ai .msg-label { color: var(--cyan); }
+
+    @keyframes msgIn {
+      0% { opacity: 0; transform: translateY(10px) scale(0.97); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Thinking indicator */
+    .thinking-indicator {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: var(--text-dim);
+      animation: msgIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .thinking-indicator.visible { display: flex; }
+    .thinking-dots {
+      display: flex;
+      gap: 4px;
+    }
+    .thinking-dots span {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--cyan);
+      animation: dotBounce 1.4s ease-in-out infinite;
+    }
+    .thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dotBounce {
+      0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+      40% { opacity: 1; transform: scale(1.1); }
+    }
+
+    /* Interim transcript overlay */
+    .interim-text {
+      display: none;
+      padding: 8px 14px;
+      font-size: 13px;
+      color: var(--text-dim);
+      font-style: italic;
+      animation: msgIn 0.2s ease;
+      margin-bottom: 4px;
+    }
+    .interim-text.visible { display: block; }
+
+    /* ===================== CONTROL BAR ===================== */
+    .control-bar {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      padding: 20px 24px calc(20px + var(--sab));
+      background: linear-gradient(to top, rgba(17, 24, 39, 0.98), rgba(17, 24, 39, 0.85));
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-top: 1px solid rgba(255,255,255,0.05);
+      z-index: 10;
+    }
+
+    .btn-control {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      -webkit-user-select: none;
+      user-select: none;
+      outline: none;
+    }
+    .btn-control:active .btn-icon { transform: scale(0.92); }
+
+    .btn-icon {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-icon svg { width: 28px; height: 28px; }
+    .btn-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-dim);
+      transition: color 0.2s;
+    }
+
+    /* Mic button */
+    .mic-btn .btn-icon {
+      width: 80px; height: 80px;
+      background: var(--surface);
+      border: 2px solid rgba(255,255,255,0.08);
+      color: var(--text-dim);
+    }
+    .mic-btn .btn-icon svg { width: 32px; height: 32px; }
+    .mic-btn.listening .btn-icon {
+      background: var(--green);
+      border-color: var(--green);
+      color: white;
+      box-shadow: 0 0 30px var(--green-glow), 0 0 60px var(--green-dim);
+      animation: micPulse 2s ease-in-out infinite;
+    }
+    .mic-btn.listening .btn-label { color: var(--green); }
+
+    @keyframes micPulse {
+      0%, 100% { box-shadow: 0 0 30px var(--green-glow), 0 0 60px var(--green-dim); }
+      50% { box-shadow: 0 0 40px var(--green-glow), 0 0 80px var(--green-dim); }
+    }
+
+    /* End call button */
+    .end-btn .btn-icon {
+      background: var(--red-dim);
+      border: 2px solid rgba(239, 68, 68, 0.2);
+      color: var(--red);
+    }
+    .end-btn:active .btn-icon {
+      background: var(--red);
+      color: white;
+    }
+
+    /* Mute btn (secondary) */
+    .mute-btn .btn-icon {
+      background: var(--surface);
+      border: 2px solid rgba(255,255,255,0.08);
+      color: var(--text-dim);
+    }
+    .mute-btn.muted .btn-icon {
+      background: var(--red-dim);
+      border-color: rgba(239,68,68,0.2);
+      color: var(--red);
+    }
+    .mute-btn.muted .btn-label { color: var(--red); }
+
+    /* ===================== OVERLAYS ===================== */
+    .call-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 15, 26, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      transition: opacity 0.4s;
+    }
+    .call-overlay.hidden { opacity: 0; pointer-events: none; }
+    .overlay-icon {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .overlay-icon svg { width: 40px; height: 40px; }
+    .overlay-icon.connecting {
+      background: var(--green-dim);
+      color: var(--green);
+      animation: overlayPulse 1.5s ease-in-out infinite;
+    }
+    .overlay-icon.ended {
+      background: var(--red-dim);
+      color: var(--red);
+    }
+    @keyframes overlayPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.08); opacity: 0.7; }
+    }
+    .overlay-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .overlay-sub {
+      font-size: 14px;
+      color: var(--text-dim);
+      margin-bottom: 28px;
+    }
+    .overlay-btn {
+      padding: 14px 40px;
+      border-radius: 14px;
+      border: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      min-height: 48px;
+      transition: all 0.2s;
+    }
+    .overlay-btn:active { transform: scale(0.96); }
+    .overlay-btn.primary {
+      background: var(--green);
+      color: white;
+      box-shadow: 0 4px 20px var(--green-dim);
+    }
+    .overlay-btn.secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.08);
+      margin-top: 10px;
+    }
+
+    /* ===================== BACKGROUND DECORATION ===================== */
+    .bg-glow {
+      position: fixed;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.15;
+    }
+    .bg-glow-1 {
+      top: -80px; right: -60px;
+      background: var(--green);
+    }
+    .bg-glow-2 {
+      bottom: 10%; left: -80px;
+      background: var(--cyan);
+      opacity: 0.08;
+    }
+  </style>
+</head>
+<body>
+  <!-- Background decorations -->
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <!-- =============== CONNECTING OVERLAY =============== -->
+  <div class="call-overlay" id="connectingOverlay">
+    <div class="overlay-icon connecting">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+      </svg>
+    </div>
+    <div class="overlay-title">Connecting to Emily…</div>
+    <div class="overlay-sub">Tooth Dental Care Reception</div>
+  </div>
+
+  <!-- =============== ENDED OVERLAY =============== -->
+  <div class="call-overlay hidden" id="endedOverlay">
+    <div class="overlay-icon ended">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/>
+        <line x1="23" y1="1" x2="1" y2="23"/>
+      </svg>
+    </div>
+    <div class="overlay-title" id="endedTitle">Call Ended</div>
+    <div class="overlay-sub" id="endedSub">Thank you for calling Tooth Dental Care</div>
+    <button class="overlay-btn primary" onclick="location.href='index.html'">Back to Home</button>
+    <button class="overlay-btn secondary" onclick="location.reload()">Call Again</button>
+  </div>
+
+  <!-- =============== MAIN CALL UI =============== -->
+  <div class="call-container" id="callContainer">
+    <!-- Header -->
+    <div class="call-header">
+      <a href="index.html" class="back-btn" id="backBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        <span>Back</span>
+      </a>
+      <div class="connection-badge">
+        <div class="connection-dot" id="connDot"></div>
+        <span id="connLabel">Connecting</span>
+      </div>
+    </div>
+
+    <!-- Avatar -->
+    <div class="avatar-section">
+      <div class="avatar-wrapper" id="avatarWrapper">
+        <!-- Pulse rings -->
+        <div class="pulse-ring pulse-ring-1"></div>
+        <div class="pulse-ring pulse-ring-2"></div>
+        <div class="pulse-ring pulse-ring-3"></div>
+
+        <!-- Voice visualizer bars (generated in JS) -->
+        <div class="voice-visualizer" id="voiceViz"></div>
+
+        <!-- Avatar -->
+        <div class="avatar-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="caller-info">
+        <div class="caller-name">Emily</div>
+        <div class="caller-role">AI Receptionist · Tooth Dental Care</div>
+        <div class="call-timer" id="callTimer">00:00</div>
+      </div>
+    </div>
+
+    <!-- Transcript -->
+    <div class="transcript-section">
+      <div class="transcript-label">Live Transcript</div>
+      <div class="transcript-scroll" id="transcriptScroll">
+        <div id="transcriptMessages"></div>
+        <div class="thinking-indicator" id="thinkingIndicator">
+          <div class="thinking-dots">
+            <span></span><span></span><span></span>
+          </div>
+          Emily is thinking…
+        </div>
+        <div class="interim-text" id="interimText"></div>
+      </div>
+    </div>
+
+    <!-- Control bar -->
+    <div class="control-bar">
+      <button class="btn-control mute-btn" id="muteBtn" title="Mute">
+        <div class="btn-icon">
+          <svg id="muteIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+          </svg>
+        </div>
+        <span class="btn-label">Speaker</span>
+      </button>
+
+      <button class="btn-control mic-btn" id="micBtn" title="Microphone">
+        <div class="btn-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="1" width="6" height="11" rx="3"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="23"/>
+            <line x1="8" y1="23" x2="16" y2="23"/>
+          </svg>
+        </div>
+        <span class="btn-label">Mic Off</span>
+      </button>
+
+      <button class="btn-control end-btn" id="endBtn" title="End Call">
+        <div class="btn-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/>
+            <line x1="23" y1="1" x2="1" y2="23"/>
+          </svg>
+        </div>
+        <span class="btn-label">End</span>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    /* =================================================================
+       Tooth Dental Care — Premium Voice Call Interface
+       ================================================================= */
+    (() => {
+      'use strict';
+
+      // ── DOM refs ──
+      const $ = id => document.getElementById(id);
+      const connectingOverlay = $('connectingOverlay');
+      const endedOverlay = $('endedOverlay');
+      const endedTitle = $('endedTitle');
+      const endedSub = $('endedSub');
+      const connDot = $('connDot');
+      const connLabel = $('connLabel');
+      const avatarWrapper = $('avatarWrapper');
+      const callTimerEl = $('callTimer');
+      const transcriptMessages = $('transcriptMessages');
+      const transcriptScroll = $('transcriptScroll');
+      const thinkingIndicator = $('thinkingIndicator');
+      const interimText = $('interimText');
+      const micBtn = $('micBtn');
+      const muteBtn = $('muteBtn');
+      const endBtn = $('endBtn');
+      const voiceViz = $('voiceViz');
+
+      // ── State ──
+      let ws = null;
+      let audioCtx = null;
+      let micStream = null;
+      let micWorkletNode = null;
+      let micScriptNode = null; // fallback
+      let micActive = false;
+      let speakerMuted = false;
+      let callStartTime = null;
+      let timerInterval = null;
+      let wakeLock = null;
+      let reconnectAttempts = 0;
+      const MAX_RECONNECT = 3;
+      let intentionalClose = false;
+
+      // TTS queue
+      let audioQueue = [];
+      let isPlayingAudio = false;
+      let currentAudioSource = null;
+
+      // ── Voice visualizer bars ──
+      (function initVizBars() {
+        const count = 24;
+        for (let i = 0; i < count; i++) {
+          const bar = document.createElement('div');
+          bar.className = 'viz-bar';
+          const angle = (360 / count) * i;
+          const radius = 72;
+          const rad = (angle * Math.PI) / 180;
+          const x = Math.cos(rad) * radius;
+          const y = Math.sin(rad) * radius;
+          bar.style.left = `calc(50% + ${x}px - 1.5px)`;
+          bar.style.top = `calc(50% + ${y}px - 10px)`;
+          bar.style.transform = `rotate(${angle + 90}deg)`;
+          bar.style.animationDelay = `${(i * 0.05)}s`;
+          bar.style.height = `${8 + Math.random() * 14}px`;
+          voiceViz.appendChild(bar);
+        }
+      })();
+
+      // ── Haptic helper ──
+      function haptic(ms = 10) {
+        try { navigator.vibrate && navigator.vibrate(ms); } catch(e) {}
+      }
+
+      // ── Wake lock ──
+      async function acquireWakeLock() {
+        try {
+          if ('wakeLock' in navigator) {
+            wakeLock = await navigator.wakeLock.request('screen');
+            wakeLock.addEventListener('release', () => { wakeLock = null; });
+          }
+        } catch(e) {}
+      }
+      function releaseWakeLock() {
+        try { wakeLock && wakeLock.release(); wakeLock = null; } catch(e) {}
+      }
+
+      // ── Timer ──
+      function startTimer() {
+        callStartTime = Date.now();
+        timerInterval = setInterval(() => {
+          const elapsed = Math.floor((Date.now() - callStartTime) / 1000);
+          const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
+          const s = String(elapsed % 60).padStart(2, '0');
+          callTimerEl.textContent = `${m}:${s}`;
+        }, 1000);
+      }
+      function stopTimer() {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+
+      // ── Connection UI ──
+      function setConnectionStatus(status) {
+        connDot.className = 'connection-dot';
+        if (status === 'connected') {
+          connDot.classList.add('connected');
+          connLabel.textContent = 'Connected';
+        } else if (status === 'error') {
+          connDot.classList.add('error');
+          connLabel.textContent = 'Disconnected';
+        } else {
+          connLabel.textContent = 'Connecting';
+        }
+      }
+
+      // ── Transcript ──
+      function addMessage(type, text) {
+        const div = document.createElement('div');
+        if (type === 'system') {
+          div.className = 'msg msg-system';
+          div.textContent = text;
+        } else {
+          div.className = 'msg ' + (type === 'user' ? 'msg-user' : 'msg-ai');
+          const label = document.createElement('span');
+          label.className = 'msg-label';
+          label.textContent = type === 'user' ? 'You' : 'Emily';
+          div.appendChild(label);
+          div.appendChild(document.createTextNode(text));
+        }
+        transcriptMessages.appendChild(div);
+        scrollTranscript();
+      }
+      function scrollTranscript() {
+        requestAnimationFrame(() => {
+          transcriptScroll.scrollTop = transcriptScroll.scrollHeight;
+        });
+      }
+      function showThinking(show) {
+        thinkingIndicator.classList.toggle('visible', show);
+        if (show) scrollTranscript();
+      }
+      function showInterim(text) {
+        if (text) {
+          interimText.textContent = `"${text}"`;
+          interimText.classList.add('visible');
+        } else {
+          interimText.classList.remove('visible');
+          interimText.textContent = '';
+        }
+        scrollTranscript();
+      }
+
+      // ── Audio Context (SINGLE, reused) ──
+      function ensureAudioContext() {
+        if (!audioCtx || audioCtx.state === 'closed') {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 24000 });
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        return audioCtx;
+      }
+
+      // ── TTS Audio Queue ──
+      function enqueueAudio(base64Audio) {
+        audioQueue.push(base64Audio);
+        if (!isPlayingAudio) {
+          playNextAudio();
+        }
+      }
+
+      async function playNextAudio() {
+        if (audioQueue.length === 0) {
+          isPlayingAudio = false;
+          avatarWrapper.classList.remove('speaking');
+          return;
+        }
+        isPlayingAudio = true;
+        if (speakerMuted) {
+          audioQueue.shift();
+          playNextAudio();
+          return;
+        }
+        avatarWrapper.classList.add('speaking');
+        const base64 = audioQueue.shift();
+        try {
+          const ctx = ensureAudioContext();
+          const binaryStr = atob(base64);
+          const len = binaryStr.length;
+          const bytes = new Uint8Array(len);
+          for (let i = 0; i < len; i++) bytes[i] = binaryStr.charCodeAt(i);
+          const audioBuffer = await ctx.decodeAudioData(bytes.buffer);
+          const source = ctx.createBufferSource();
+          source.buffer = audioBuffer;
+          source.connect(ctx.destination);
+          currentAudioSource = source;
+          source.onended = () => {
+            currentAudioSource = null;
+            playNextAudio();
+          };
+          source.start(0);
+        } catch (e) {
+          console.error('Audio decode/play error:', e);
+          currentAudioSource = null;
+          playNextAudio();
+        }
+      }
+
+      function stopCurrentAudio() {
+        try { currentAudioSource && currentAudioSource.stop(); } catch(e) {}
+        currentAudioSource = null;
+        audioQueue = [];
+        isPlayingAudio = false;
+        avatarWrapper.classList.remove('speaking');
+      }
+
+      // ── Microphone ──
+      async function startMic() {
+        try {
+          const ctx = ensureAudioContext();
+          micStream = await navigator.mediaDevices.getUserMedia({
+            audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true }
+          });
+          const source = ctx.createMediaStreamSource(micStream);
+
+          // Try AudioWorklet first
+          let useWorklet = false;
+          try {
+            await ctx.audioWorklet.addModule('audio-processor.js');
+            useWorklet = true;
+          } catch(e) {
+            console.warn('AudioWorklet not supported, using ScriptProcessor fallback');
+          }
+
+          if (useWorklet) {
+            micWorkletNode = new AudioWorkletNode(ctx, 'audio-capture-processor');
+            micWorkletNode.port.onmessage = (e) => {
+              if (ws && ws.readyState === WebSocket.OPEN && micActive) {
+                ws.send(e.data);
+              }
+            };
+            source.connect(micWorkletNode);
+            micWorkletNode.connect(ctx.destination); // needed to keep processing alive (silent)
+          } else {
+            // ScriptProcessor fallback
+            const bufferSize = 4096;
+            micScriptNode = ctx.createScriptProcessor(bufferSize, 1, 1);
+            const inputSampleRate = ctx.sampleRate;
+            const outputSampleRate = 16000;
+
+            micScriptNode.onaudioprocess = (e) => {
+              if (!micActive || !ws || ws.readyState !== WebSocket.OPEN) return;
+              const input = e.inputBuffer.getChannelData(0);
+              // Downsample
+              const ratio = inputSampleRate / outputSampleRate;
+              const outputLength = Math.round(input.length / ratio);
+              const pcm16 = new Int16Array(outputLength);
+              for (let i = 0; i < outputLength; i++) {
+                const srcIdx = Math.floor(i * ratio);
+                let s = Math.max(-1, Math.min(1, input[srcIdx]));
+                pcm16[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+              }
+              ws.send(pcm16.buffer);
+            };
+            source.connect(micScriptNode);
+            micScriptNode.connect(ctx.destination);
+          }
+          micActive = true;
+          micBtn.classList.add('listening');
+          micBtn.querySelector('.btn-label').textContent = 'Mic On';
+          if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'start_mic' }));
+          }
+        } catch (e) {
+          console.error('Mic error:', e);
+          addMessage('system', 'Microphone access denied. Please allow microphone permissions.');
+        }
+      }
+
+      function stopMic() {
+        micActive = false;
+        micBtn.classList.remove('listening');
+        micBtn.querySelector('.btn-label').textContent = 'Mic Off';
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ type: 'stop_mic' }));
+        }
+        // Keep stream alive but stop sending
+      }
+
+      function destroyMic() {
+        micActive = false;
+        try { micWorkletNode && micWorkletNode.disconnect(); } catch(e) {}
+        try { micScriptNode && micScriptNode.disconnect(); } catch(e) {}
+        micWorkletNode = null;
+        micScriptNode = null;
+        if (micStream) {
+          micStream.getTracks().forEach(t => t.stop());
+          micStream = null;
+        }
+      }
+
+      // ── WebSocket ──
+      function getWSUrl() {
+        const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+        return `${proto}//${location.host}/ws`;
+      }
+
+      function connectWS() {
+        setConnectionStatus('connecting');
+        try {
+          ws = new WebSocket(getWSUrl());
+        } catch(e) {
+          handleWSError();
+          return;
+        }
+
+        ws.binaryType = 'arraybuffer';
+
+        ws.onopen = () => {
+          reconnectAttempts = 0;
+          setConnectionStatus('connected');
+          connectingOverlay.classList.add('hidden');
+          startTimer();
+          acquireWakeLock();
+          addMessage('system', 'Connected to Tooth Dental Care');
+          // Auto-start mic so user can immediately talk
+          startMic();
+        };
+
+        ws.onmessage = (event) => {
+          if (typeof event.data === 'string') {
+            let msg;
+            try { msg = JSON.parse(event.data); } catch(e) { return; }
+            handleServerMessage(msg);
+          }
+        };
+
+        ws.onerror = () => {
+          handleWSError();
+        };
+
+        ws.onclose = (e) => {
+          if (intentionalClose) return;
+          setConnectionStatus('error');
+          if (reconnectAttempts < MAX_RECONNECT) {
+            reconnectAttempts++;
+            const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 8000);
+            addMessage('system', `Connection lost. Reconnecting in ${Math.round(delay/1000)}s… (${reconnectAttempts}/${MAX_RECONNECT})`);
+            setTimeout(connectWS, delay);
+          } else {
+            showEndScreen('Connection Lost', 'Unable to reconnect. Please try again.');
+          }
+        };
+      }
+
+      function handleWSError() {
+        setConnectionStatus('error');
+        if (reconnectAttempts < MAX_RECONNECT) {
+          reconnectAttempts++;
+          const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 8000);
+          setTimeout(connectWS, delay);
+        } else {
+          connectingOverlay.classList.add('hidden');
+          showEndScreen('Connection Failed', 'Could not connect to the reception. Please try again later.');
+        }
+      }
+
+      function handleServerMessage(msg) {
+        switch (msg.type) {
+          case 'interim_transcript':
+            showInterim(msg.text);
+            break;
+
+          case 'user_transcript':
+            showInterim('');
+            addMessage('user', msg.text);
+            showThinking(true);
+            break;
+
+          case 'ai_text':
+            showThinking(false);
+            addMessage('ai', msg.text);
+            break;
+
+          case 'ai_audio':
+            showThinking(false);
+            if (msg.audio) {
+              enqueueAudio(msg.audio);
+            }
+            break;
+
+          default:
+            break;
+        }
+      }
+
+      // ── End call ──
+      function showEndScreen(title, sub) {
+        endedTitle.textContent = title || 'Call Ended';
+        endedSub.textContent = sub || 'Thank you for calling Tooth Dental Care';
+        endedOverlay.classList.remove('hidden');
+      }
+
+      function endCall() {
+        haptic(30);
+        intentionalClose = true;
+        stopTimer();
+        stopCurrentAudio();
+        destroyMic();
+        releaseWakeLock();
+        if (ws) {
+          try { ws.close(); } catch(e) {}
+          ws = null;
+        }
+        if (audioCtx && audioCtx.state !== 'closed') {
+          try { audioCtx.close(); } catch(e) {}
+        }
+        setConnectionStatus('error');
+        showEndScreen();
+      }
+
+      // ── Event listeners ──
+      micBtn.addEventListener('click', () => {
+        haptic();
+        if (micActive) {
+          stopMic();
+        } else {
+          startMic();
+        }
+      });
+
+      muteBtn.addEventListener('click', () => {
+        haptic();
+        speakerMuted = !speakerMuted;
+        muteBtn.classList.toggle('muted', speakerMuted);
+        muteBtn.querySelector('.btn-label').textContent = speakerMuted ? 'Muted' : 'Speaker';
+        const icon = $('muteIcon');
+        if (speakerMuted) {
+          icon.innerHTML = '<path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>';
+          stopCurrentAudio();
+        } else {
+          icon.innerHTML = '<path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>';
+        }
+      });
+
+      endBtn.addEventListener('click', endCall);
+
+      // Prevent back button without confirmation
+      $('backBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        haptic();
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          if (confirm('End the call and go back?')) {
+            endCall();
+            setTimeout(() => { location.href = 'index.html'; }, 200);
+          }
+        } else {
+          location.href = 'index.html';
+        }
+      });
+
+      // Resume audio context on user gesture (mobile Safari)
+      document.addEventListener('touchstart', () => {
+        ensureAudioContext();
+      }, { once: true });
+      document.addEventListener('click', () => {
+        ensureAudioContext();
+      }, { once: true });
+
+      // Handle visibility change for wake lock
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible' && ws && ws.readyState === WebSocket.OPEN) {
+          acquireWakeLock();
+        }
+      });
+
+      // ── Init ──
+      connectWS();
+
+    })();
+  </script>
+</body>
+</html>
